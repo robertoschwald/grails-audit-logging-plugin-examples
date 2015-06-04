@@ -4,6 +4,8 @@ class User {
 
 	transient springSecurityService
 
+	static auditable = true
+
 	String username
 	String password
 	boolean enabled = true
@@ -17,10 +19,11 @@ class User {
 	}
 
 	static mapping = {
-		password column: '`password`'
+		//password column: '`password`' // enable for other dbs than HSQLDB
 	}
 
 	Set<Role> getAuthorities() {
+		if (!this.id) return []
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}
 

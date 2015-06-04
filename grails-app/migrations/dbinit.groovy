@@ -1,8 +1,8 @@
 databaseChangeLog = {
 
-	changeSet(author: "roos (generated)", id: "1394019695756-1") {
+	changeSet(author: "roos (generated)", id: "1433409848582-1") {
 		createTable(tableName: "audit_log") {
-			column(autoIncrement: "true", name: "id", type: "bigint") {
+			column(name: "id", type: "bigint") {
 				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "audit_logPK")
 			}
 
@@ -10,13 +10,13 @@ databaseChangeLog = {
 
 			column(name: "class_name", type: "varchar(255)")
 
-			column(name: "date_created", type: "datetime") {
+			column(name: "date_created", type: "timestamp") {
 				constraints(nullable: "false")
 			}
 
 			column(name: "event_name", type: "varchar(255)")
 
-			column(name: "last_updated", type: "datetime") {
+			column(name: "last_updated", type: "timestamp") {
 				constraints(nullable: "false")
 			}
 
@@ -34,7 +34,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-2") {
+	changeSet(author: "roos (generated)", id: "1433409848582-2") {
 		createTable(tableName: "book") {
 			column(autoIncrement: "true", name: "id", type: "bigint") {
 				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "bookPK")
@@ -54,7 +54,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-3") {
+	changeSet(author: "roos (generated)", id: "1433409848582-3") {
 		createTable(tableName: "role") {
 			column(autoIncrement: "true", name: "id", type: "bigint") {
 				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "rolePK")
@@ -70,7 +70,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-4") {
+	changeSet(author: "roos (generated)", id: "1433409848582-4") {
 		createTable(tableName: "user") {
 			column(autoIncrement: "true", name: "id", type: "bigint") {
 				constraints(nullable: "false", primaryKey: "true", primaryKeyName: "userPK")
@@ -80,15 +80,15 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "account_expired", type: "bit") {
+			column(name: "account_expired", type: "boolean") {
 				constraints(nullable: "false")
 			}
 
-			column(name: "account_locked", type: "bit") {
+			column(name: "account_locked", type: "boolean") {
 				constraints(nullable: "false")
 			}
 
-			column(name: "enabled", type: "bit") {
+			column(name: "enabled", type: "boolean") {
 				constraints(nullable: "false")
 			}
 
@@ -96,7 +96,7 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "password_expired", type: "bit") {
+			column(name: "password_expired", type: "boolean") {
 				constraints(nullable: "false")
 			}
 
@@ -106,7 +106,7 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-5") {
+	changeSet(author: "roos (generated)", id: "1433409848582-5") {
 		createTable(tableName: "user_role") {
 			column(name: "role_id", type: "bigint") {
 				constraints(nullable: "false")
@@ -118,39 +118,27 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-6") {
+	changeSet(author: "roos (generated)", id: "1433409848582-6") {
 		addPrimaryKey(columnNames: "role_id, user_id", constraintName: "user_rolePK", tableName: "user_role")
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-9") {
-		createIndex(indexName: "authority_uniq_1394019695685", tableName: "role", unique: "true") {
+	changeSet(author: "roos (generated)", id: "1433409848582-9") {
+		createIndex(indexName: "authority_uniq_1433409848493", tableName: "role", unique: "true") {
 			column(name: "authority")
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-10") {
-		createIndex(indexName: "username_uniq_1394019695691", tableName: "user", unique: "true") {
+	changeSet(author: "roos (generated)", id: "1433409848582-10") {
+		createIndex(indexName: "username_uniq_1433409848497", tableName: "user", unique: "true") {
 			column(name: "username")
 		}
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-11") {
-		createIndex(indexName: "FK143BF46A150C58D8", tableName: "user_role") {
-			column(name: "role_id")
-		}
+	changeSet(author: "roos (generated)", id: "1433409848582-7") {
+		addForeignKeyConstraint(baseColumnNames: "role_id", baseTableName: "user_role", constraintName: "FK_it77eq964jhfqtu54081ebtio", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "role", referencesUniqueColumn: "false")
 	}
 
-	changeSet(author: "roos (generated)", id: "1394019695756-12") {
-		createIndex(indexName: "FK143BF46ABA371CB8", tableName: "user_role") {
-			column(name: "user_id")
-		}
-	}
-
-	changeSet(author: "roos (generated)", id: "1394019695756-7") {
-		addForeignKeyConstraint(baseColumnNames: "role_id", baseTableName: "user_role", constraintName: "FK143BF46A150C58D8", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "role", referencesUniqueColumn: "false")
-	}
-
-	changeSet(author: "roos (generated)", id: "1394019695756-8") {
-		addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "user_role", constraintName: "FK143BF46ABA371CB8", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user", referencesUniqueColumn: "false")
+	changeSet(author: "roos (generated)", id: "1433409848582-8") {
+		addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "user_role", constraintName: "FK_apcc8lxk2xnug8377fatvbn04", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user", referencesUniqueColumn: "false")
 	}
 }

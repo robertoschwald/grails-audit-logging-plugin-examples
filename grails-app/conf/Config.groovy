@@ -63,9 +63,6 @@ grails {
   }
 }
 
-
-
-
 grails.converters.encoding = "UTF-8"
 // scaffolding templates configuration
 grails.scaffolding.templates.domainSuffix = 'Instance'
@@ -90,6 +87,63 @@ grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.dropOnStart = true
 grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
+
+
+// cache
+// special config with named cacheManager to prevent "Another unnamed Cache Manager already exists" errors
+// see http://www.first8.nl/blog/fix-cachemanager-with-same-name-grails-cache-ehcache/
+grails{
+  cache {
+    order = 2000 // higher than default (1000) and plugins, usually 1500
+    enabled = true
+    clearAtStartup=true // reset caches when redeploying
+    ehcache {
+      // ehcacheXmlLocation = 'classpath:ehcache.xml' // no custom xml config location (no xml at all)
+      reloadable = false
+    }
+  }
+}
+def uniqueCacheManagerName = appName + "ConfigEhcache-" + System.currentTimeMillis()
+grails.cache.ehcache.cacheManagerName = uniqueCacheManagerName
+
+grails.cache.config = {
+  provider {
+    updateCheck false
+    monitoring 'on'
+    dynamicConfig false
+    // unique name when configuring caches
+    name uniqueCacheManagerName
+  }
+  /*
+  cache {
+    name 'org.hibernate.cache.StandardQueryCache'
+    maxElementsInMemory 50
+    timeToLiveSeconds 120
+    eternal false
+    overflowToDisk true
+    maxElementsOnDisk 0
+  }
+  cache {
+    name 'org.hibernate.cache.UpdateTimestampsCache'
+    maxElementsInMemory 5000
+    eternal true
+    overflowToDisk false
+    maxElementsOnDisk 0
+  }
+  */
+  defaultCache {
+    maxElementsInMemory 10000
+    eternal false
+    timeToIdleSeconds 120
+    timeToLiveSeconds 120
+    overflowToDisk false // no disk use, this would require more config
+    maxElementsOnDisk 10000000
+    diskPersistent false
+    diskExpiryThreadIntervalSeconds 120
+    memoryStoreEvictionPolicy 'LRU' // least recently used gets kicked out
+  }
+
+}
 
 environments {
   development {
@@ -139,7 +193,7 @@ log4j = {
 }
 
 // Added by the Spring Security Core plugin:
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'org.codehaus.grails.plugin.auditlog.User'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'org.codehaus.grails.plugin.auditlog.UserRole'
-grails.plugins.springsecurity.authority.className = 'org.codehaus.grails.plugin.auditlog.Role'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.codehaus.grails.plugin.auditlog.User'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.codehaus.grails.plugin.auditlog.UserRole'
+grails.plugin.springsecurity.authority.className = 'org.codehaus.grails.plugin.auditlog.Role'
 grails.plugin.springsecurity.password.algorithm='bcrypt'

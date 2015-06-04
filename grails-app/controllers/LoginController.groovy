@@ -1,9 +1,6 @@
+
 import grails.converters.JSON
-
-import javax.servlet.http.HttpServletResponse
-
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -11,6 +8,8 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+
+import javax.servlet.http.HttpServletResponse
 
 class LoginController {
 
@@ -51,7 +50,7 @@ class LoginController {
 		String view = 'auth'
 		String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 		render view: view, model: [postUrl: postUrl,
-		                           rememberMeParameter: config.rememberMe.parameter]
+															 rememberMeParameter: config.rememberMe.parameter]
 	}
 
 	/**
@@ -67,7 +66,7 @@ class LoginController {
 	 */
 	def denied = {
 		if (springSecurityService.isLoggedIn() &&
-				authenticationTrustResolver.isRememberMe(SCH.context?.authentication)) {
+			authenticationTrustResolver.isRememberMe(SCH.context?.authentication)) {
 			// have cookie but the page is guarded with IS_AUTHENTICATED_FULLY
 			redirect action: 'full', params: params
 		}
@@ -80,7 +79,7 @@ class LoginController {
 		def config = SpringSecurityUtils.securityConfig
 		render view: 'auth', params: params,
 			model: [hasCookie: authenticationTrustResolver.isRememberMe(SCH.context?.authentication),
-			        postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}"]
+							postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}"]
 	}
 
 	/**

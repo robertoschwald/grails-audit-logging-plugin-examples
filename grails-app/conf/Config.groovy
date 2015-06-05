@@ -1,3 +1,6 @@
+import grails.plugin.springsecurity.SpringSecurityUtils
+import org.codehaus.grails.plugin.auditlog.User
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -15,20 +18,27 @@
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 // The ACCEPT header will not be used for content negotiation for user agents containing the following strings (defaults to the 4 major rendering engines)
 grails.mime.disable.accept.header.userAgents = ['Gecko', 'WebKit', 'Presto', 'Trident']
+grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
+grails.mime.use.accept.header = false
 grails.mime.types = [ // the first one is the default format
-    all:           '*/*', // 'all' maps to '*' or the first available format in withFormat
-    atom:          'application/atom+xml',
-    css:           'text/css',
-    csv:           'text/csv',
-    form:          'application/x-www-form-urlencoded',
-    html:          ['text/html','application/xhtml+xml'],
-    js:            'text/javascript',
-    json:          ['application/json', 'text/json'],
-    multipartForm: 'multipart/form-data',
-    rss:           'application/rss+xml',
-    text:          'text/plain',
-    hal:           ['application/hal+json','application/hal+xml'],
-    xml:           ['text/xml', 'application/xml']
+                      all          :'*/*', // 'all' maps to '*' or the first available format in withFormat
+                      atom         :'application/atom+xml',
+                      css          :'text/css',
+                      csv          :'text/csv',
+                      form         :'application/x-www-form-urlencoded',
+                      html         :['text/html', 'application/xhtml+xml'],
+                      js           :'text/javascript',
+                      json         :['application/json', 'text/json'],
+                      multipartForm:'multipart/form-data',
+                      rss          :'application/rss+xml',
+                      text         :'text/plain',
+                      xml          :['text/xml', 'application/xml'],
+                      // added by roos
+                      hal          :['application/hal+json', 'application/hal+xml'],
+                      png          :'image/png',
+                      jpg          :'image/jpg',
+                      pdf          :'application/pdf'
+
 ]
 
 // URL Mapping Cache Max Size, defaults to 5000
@@ -40,6 +50,8 @@ grails.resources.adhoc.excludes = ['/WEB-INF/**']
 
 // Legacy setting for codec used to encode data with ${}
 grails.views.default.codec = "html"
+grails.views.gsp.encoding = "UTF-8"
+grails.converters.encoding = "UTF-8"
 
 // The default scope for controllers. May be prototype, session or singleton.
 // If unspecified, controllers are prototype scoped.
@@ -80,7 +92,10 @@ grails.web.disable.multipart=false
 grails.exceptionresolver.params.exclude = ['password']
 
 // configure auto-caching of queries by default (if false you can cache individual queries with 'cache: true')
-grails.hibernate.cache.queries = false
+grails.hibernate.cache.queries = true
+
+grails.assets.excludes = ["bootstrap3/*.less"]
+grails.assets.less.compiler = 'less4j'
 
 // database migration plugin. See grails-app/migration/ dir
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
@@ -106,6 +121,90 @@ grails{
 def uniqueCacheManagerName = appName + "ConfigEhcache-" + System.currentTimeMillis()
 grails.cache.ehcache.cacheManagerName = uniqueCacheManagerName
 
+// Spring Security Core plugin
+grails {
+  plugin {
+    springsecurity {
+      // Added by the Spring Security Core plugin:
+      userLookup.userDomainClassName = 'org.codehaus.grails.plugin.auditlog.User'
+      userLookup.authorityJoinClassName = 'org.codehaus.grails.plugin.auditlog.UserRole'
+      authority.className = 'org.codehaus.grails.plugin.auditlog.Role'
+      password.algorithm = "bcrypt" // do not use digests anymore. See spring-security-plugin documentation for bcrypt.
+      password.bcrypt.logrounds = 10
+      securityConfigType = "InterceptUrlMap"
+      portMapper.httpPort = 80
+      portMapper.httpsPort = 443
+      rejectIfNoRule = true
+      auth.forceHttps = true
+      useSessionFixationPrevention = "true" // Create new Cookie on login. Added by symentis for OWASP security A3
+      //secureChannel.definition = ['/**':'REQUIRES_SECURE_CHANNEL']
+      // SECURITY MAPPINGS Note: 'ROLE_SCAFFOLD','IS_AUTHENTICATED_FULLY' means: fully (no rememberMe) authenticated user with ROLE_SCAFFOLD
+      // http://grails-plugins.github.com/grails-spring-security-core/docs/manual/guide/5%20Configuring%20Request%20Mappings%20to%20Secure%20URLs.html
+      // http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/access/vote/AuthenticatedVoter.html
+      interceptUrlMap = [
+        '/'                   :['ROLE_USER', 'IS_AUTHENTICATED_REMEMBERED'],
+        '/cache/**'           :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/static/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/assets/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/login/**'           :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/logout/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/**'                 :['ROLE_USER', 'IS_AUTHENTICATED_REMEMBERED']
+      ]
+
+      // New in SpringSecurity 2.x plugin:
+      // When mapping URLs for controllers that are mapped in UrlMappings.groovy, you need to secure the un-url-mapped URLs.
+      // For example if you have a FooBarController that you map to /foo/bar/$action, you must register that in
+      // controllerAnnotations.staticRules as /foobar/**.
+      // This is different than the mapping you would use for the other two approaches and is necessary because
+      // controllerAnnotations.staticRules entries are treated as if they were annotations on the corresponding controller.
+      controllerAnnotations.staticRules = [
+        '/index':                         ['permitAll'],
+        '/index.gsp':                     ['permitAll'],
+        '/**/js/**':                      ['permitAll'],
+        '/**/css/**':                     ['permitAll'],
+        '/**/images/**':                  ['permitAll'],
+        '/**/favicon.ico':                ['permitAll']
+      ]
+
+      //successHandler.defaultTargetUrl =
+      logout.afterLogoutUrl = "/login/auth?logoutByUser"
+
+      useSecurityEventListener = true
+      onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
+        // update lastLogin.
+        User.withTransaction {
+          // http://stackoverflow.com/questions/18842863/recording-last-logged-in-in-grails-with-optimistic-locking-failure
+          User user = User.lock(appCtx.springSecurityService.currentUser.id)
+          user.lastLogin = new Date()
+          user.save(flush:true)
+        }
+      }
+    }
+  }
+}
+
+// AuditLog Plugin config
+auditLog {
+  verbose = true // verbosely log all changed values to db by default
+  nonVerboseDelete = true // do not log attributes on delete
+  logIds = true  // log db-ids of associated objects
+  largeValueColumnTypes = true // use large column db types for oldValue/newValue.
+  TRUNCATE_LENGTH = 4000
+  //idMapping = [generator:"uuid2", type:"string", length:36]
+  replacementPatterns = ["org.codehaus.grails.plugin.":""] // replacement patterns for logging values
+  actorClosure = { request, session ->
+    // Starting with SpringSecurity Core 1.1.2, principal is a String when ANONYMOUS.
+    if (request.applicationContext.springSecurityService.principal instanceof String) {
+      return request.applicationContext.springSecurityService.principal
+    }
+    String username = request.applicationContext.springSecurityService.principal?.username
+    if (SpringSecurityUtils.isSwitched()) {
+      username = SpringSecurityUtils.switchedUserOriginalUsername + " AS " + username
+    }
+    return username
+  }
+}
+
 grails.cache.config = {
   provider {
     updateCheck false
@@ -114,23 +213,6 @@ grails.cache.config = {
     // unique name when configuring caches
     name uniqueCacheManagerName
   }
-  /*
-  cache {
-    name 'org.hibernate.cache.StandardQueryCache'
-    maxElementsInMemory 50
-    timeToLiveSeconds 120
-    eternal false
-    overflowToDisk true
-    maxElementsOnDisk 0
-  }
-  cache {
-    name 'org.hibernate.cache.UpdateTimestampsCache'
-    maxElementsInMemory 5000
-    eternal true
-    overflowToDisk false
-    maxElementsOnDisk 0
-  }
-  */
   defaultCache {
     maxElementsInMemory 10000
     eternal false
@@ -142,7 +224,6 @@ grails.cache.config = {
     diskExpiryThreadIntervalSeconds 120
     memoryStoreEvictionPolicy 'LRU' // least recently used gets kicked out
   }
-
 }
 
 environments {
@@ -177,6 +258,7 @@ log4j = {
       'net.sf.ehcache.hibernate'
 
   trace 'org.codehaus.groovy.grails.plugins.orm.auditable'
+  trace 'org.springframework.security'
   info 'grails.plugin.databasemigration'
   info "grails.app"
   error stdout: "StackTrace" // send stacktraces to console
@@ -192,8 +274,4 @@ log4j = {
 
 }
 
-// Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'org.codehaus.grails.plugin.auditlog.User'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'org.codehaus.grails.plugin.auditlog.UserRole'
-grails.plugin.springsecurity.authority.className = 'org.codehaus.grails.plugin.auditlog.Role'
-grails.plugin.springsecurity.password.algorithm='bcrypt'
+

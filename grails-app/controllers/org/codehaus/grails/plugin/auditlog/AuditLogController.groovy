@@ -11,7 +11,7 @@ class AuditLogController {
   }
 
   def view(Long id) {
-    def auditEventInstance = Book.get(id)
+    def auditEventInstance = AuditLogEvent.get(id)
     if (!auditEventInstance) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'auditlog.label', default: 'Book'), id])
       redirect(action: "list")

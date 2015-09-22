@@ -1,6 +1,3 @@
-import grails.util.Environment
-import org.hibernate.dialect.MySQLInnoDBDialect
-
 dataSource {
   pooled = true
   driverClassName = "org.h2.Driver"

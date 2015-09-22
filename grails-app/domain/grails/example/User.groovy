@@ -1,4 +1,4 @@
-package org.codehaus.grails.plugin.auditlog
+package grails.example
 
 class User {
 
@@ -8,22 +8,23 @@ class User {
 
 	String username
 	String password
-	boolean enabled = true
-	boolean accountExpired = false
-	boolean accountLocked = false
-	boolean passwordExpired = false
 	Date lastLogin
 	Date dateCreated
 	Date lastUpdated
+	boolean enabled = true
+
+	boolean accountExpired = false
+	boolean accountLocked = false
+	boolean passwordExpired = false
 
 	static constraints = {
-		username blank: false, unique: true
-		password blank: false
-		lastLogin nullable:true
+		username(blank: false, unique: true)
+		password(blank: false)
+		lastLogin(nullable:true)
 	}
 
 	static mapping = {
-		//password column: '`password`' // enable for other dbs than HSQLDB
+		//password column: 'password' // enable for other dbs than HSQLDB
 	}
 
 	Set<Role> getAuthorities() {
@@ -42,6 +43,7 @@ class User {
 	}
 
 	protected void encodePassword() {
-		password = springSecurityService.encodePassword(password)
+		if (password?.startsWith('$2a$')) return
+ 		password = springSecurityService.encodePassword(password)
 	}
 }

@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
 
   dependencies {
     // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
-    runtime 'mysql:mysql-connector-java:5.1.29'
+    // runtime 'mysql:mysql-connector-java:5.1.29'
     // runtime 'org.postgresql:postgresql:9.3-1100-jdbc41'
   }
 
@@ -63,6 +63,8 @@ grails.project.dependency.resolution = {
     //compile ':cache:1.1.8'
     compile ':cache-ehcache:1.0.5'
 
+    compile ":audit-logging:1.1.0-SNAPSHOT"
+
     // plugins needed at runtime but not for compilation
     runtime ":hibernate4:4.3.8.1"
     runtime ":database-migration:1.4.0"
@@ -71,8 +73,6 @@ grails.project.dependency.resolution = {
     compile ':asset-pipeline:2.1.5'
     compile ":less-asset-pipeline:2.0.8"
 
-
-    compile ":audit-logging:1.0.4"
     compile ":spring-security-core:2.0-RC4" // Note: This version has issue GPSPRINGSECURITYCORE-309, due to GPSPRINGSECURITYCORE-318
 
   }

@@ -1,4 +1,4 @@
-package org.codehaus.grails.plugin.auditlog
+package grails.example
 
 class Role {
 

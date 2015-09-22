@@ -1,4 +1,4 @@
-package org.codehaus.grails.plugin.auditlog
+package grails.example
 
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException

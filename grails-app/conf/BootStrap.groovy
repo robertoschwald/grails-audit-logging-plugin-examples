@@ -1,16 +1,21 @@
-import org.codehaus.grails.plugin.auditlog.Role
-import org.codehaus.grails.plugin.auditlog.User
-import org.codehaus.grails.plugin.auditlog.UserRole
+import grails.example.Role
+import grails.example.User
+import grails.example.UserRole
 
 class BootStrap {
 
     def init = { servletContext ->
-      def adminRole = new Role(authority: 'ROLE_ADMIN').save(flush: true)
-      def userRole = new Role(authority: 'ROLE_USER').save(flush: true)
-      def testUser = new User(username: 'me', password: 'password')
-      testUser.save(flush: true)
-      UserRole.create testUser, adminRole, true
-      UserRole.create testUser, userRole, true
+
+      println "Creating Users and Roles"
+      def adminRole = Role.findOrCreateByAuthority('ROLE_ADMIN').save(flush: true)
+      def userRole = Role.findOrCreateByAuthority('ROLE_USER').save(flush: true)
+      def adminUser = User.findOrCreateByUsername('me')
+      adminUser.with {
+        password = "password"
+      }
+      adminUser.save(flush: true)
+      UserRole.create adminUser, adminRole, true
+      UserRole.create adminUser, userRole, true
     }
 
     def destroy = {

@@ -1,5 +1,5 @@
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.codehaus.grails.plugin.auditlog.User
+import grails.example.User
 
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
@@ -126,9 +126,9 @@ grails {
   plugin {
     springsecurity {
       // Added by the Spring Security Core plugin:
-      userLookup.userDomainClassName = 'org.codehaus.grails.plugin.auditlog.User'
-      userLookup.authorityJoinClassName = 'org.codehaus.grails.plugin.auditlog.UserRole'
-      authority.className = 'org.codehaus.grails.plugin.auditlog.Role'
+      userLookup.userDomainClassName = 'grails.example.User'
+      userLookup.authorityJoinClassName = 'grails.example.UserRole'
+      authority.className = 'grails.example.Role'
       password.algorithm = "bcrypt" // do not use digests anymore. See spring-security-plugin documentation for bcrypt.
       password.bcrypt.logrounds = 10
       securityConfigType = "InterceptUrlMap"
@@ -136,15 +136,13 @@ grails {
       portMapper.httpsPort = 443
       rejectIfNoRule = true
       auth.forceHttps = true
-      useSessionFixationPrevention = "true" // Create new Cookie on login. Added by symentis for OWASP security A3
+      useSessionFixationPrevention = "true" // Create new Cookie on login. OWASP security A3
       //secureChannel.definition = ['/**':'REQUIRES_SECURE_CHANNEL']
-      // SECURITY MAPPINGS Note: 'ROLE_SCAFFOLD','IS_AUTHENTICATED_FULLY' means: fully (no rememberMe) authenticated user with ROLE_SCAFFOLD
-      // http://grails-plugins.github.com/grails-spring-security-core/docs/manual/guide/5%20Configuring%20Request%20Mappings%20to%20Secure%20URLs.html
-      // http://static.springsource.org/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/access/vote/AuthenticatedVoter.html
       interceptUrlMap = [
         '/'                   :['ROLE_USER', 'IS_AUTHENTICATED_REMEMBERED'],
         '/cache/**'           :['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/static/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/js/**'              :['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/assets/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/login/**'           :['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/logout/**'          :['IS_AUTHENTICATED_ANONYMOUSLY'],
@@ -172,9 +170,8 @@ grails {
       useSecurityEventListener = true
       onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
         // update lastLogin.
-        User.withTransaction {
-          // http://stackoverflow.com/questions/18842863/recording-last-logged-in-in-grails-with-optimistic-locking-failure
-          User user = User.lock(appCtx.springSecurityService.currentUser.id)
+        User.withSession {
+          User user = User.findById(appCtx.springSecurityService.principal.id)
           user.lastLogin = new Date()
           user.save(flush:true)
         }
@@ -185,6 +182,7 @@ grails {
 
 // AuditLog Plugin config
 auditLog {
+  auditDomainClassName = "grails.example.AuditLogEvent"
   verbose = true // verbosely log all changed values to db by default
   nonVerboseDelete = true // do not log attributes on delete
   logIds = true  // log db-ids of associated objects
@@ -258,12 +256,11 @@ log4j = {
       'net.sf.ehcache.hibernate'
 
   trace 'org.codehaus.groovy.grails.plugins.orm.auditable'
+  debug 'grails.plugin.mongodbcreatedrop'
   trace 'org.springframework.security'
-  info 'grails.plugin.databasemigration'
   info "grails.app"
-  error stdout: "StackTrace" // send stacktraces to console
+  error stdout: "StackTrace" // stacktraces to console
 
-  // domain
   debug 'org.codehaus.grails.plugin.auditlog'
 
   root {

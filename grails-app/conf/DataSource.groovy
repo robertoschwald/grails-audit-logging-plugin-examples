@@ -1,46 +1,17 @@
-import grails.util.Environment
-import org.hibernate.dialect.MySQLInnoDBDialect
+// MONGODB-ONLY
 
-dataSource {
-  pooled = true
-  driverClassName = "org.h2.Driver"
-  username = "sa"
-  password = ""
-}
-hibernate {
-  cache.use_second_level_cache = true
-  cache.use_query_cache = true
-  cache.region.factory_class = 'grails.plugin.cache.ehcache.hibernate.BeanEhcacheRegionFactory4' // For EhCache method caching + Hibernate 4.0 and higher
-}
-// environment specific settings
-environments {
-  development {
-    dataSource {
-      //dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-      url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
+// mongo
+grails {
+  mongo {
+    host = "127.0.0.1"
+    port = 27017
+    databaseName = "grails" // the default database name
+    //username = "grails"
+    //password = "grails"
+    options {
+      autoConnectRetry = true
+      connectTimeout = 300
     }
-  }
-  test {
-    dataSource {
-      //dbCreate = "update"
-      url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-    }
-  }
-  production {
-    dataSource {
-      //dbCreate = "update"
-      url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-      properties {
-        maxActive = -1
-        minEvictableIdleTimeMillis=1800000
-        timeBetweenEvictionRunsMillis=1800000
-        numTestsPerEvictionRun=3
-        testOnBorrow=true
-        testWhileIdle=true
-        testOnReturn=false
-        validationQuery="SELECT 1"
-        jdbcInterceptors="ConnectionState"
-      }
-    }
+    createDrop      = "database"    // Recreate whole database.
   }
 }

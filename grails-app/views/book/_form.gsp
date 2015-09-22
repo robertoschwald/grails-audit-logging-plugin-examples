@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.grails.plugin.auditlog.Book" %>
+<%@ page import="grails.example.Book" %>
 
 
 

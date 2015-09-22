@@ -22,6 +22,10 @@ grails.project.fork = [
 ]
 
 grails.project.dependency.resolver = "maven" // or ivy
+
+// Inline to debug audit-logging directly.
+// grails.plugin.location.'audit-logging' = "../grails-audit-logging-plugin_1.x_maintenance/grails-audit-logging-plugin"
+
 grails.project.dependency.resolution = {
   // inherit Grails' default dependencies
   inherits("global") {
@@ -63,16 +67,21 @@ grails.project.dependency.resolution = {
     //compile ':cache:1.1.8'
     compile ':cache-ehcache:1.0.5'
 
+    // Audit-Logging
+    compile ":audit-logging:1.1.0-SNAPSHOT"
+
     // plugins needed at runtime but not for compilation
-    runtime ":hibernate4:4.3.8.1"
-    runtime ":database-migration:1.4.0"
+    //runtime ":hibernate4:4.3.8.1" // removed to use MongoDB standalone. See http://grails.github.io/grails-data-mapping/mongodb/manual/guide/2.%20Getting%20Started.html
+    compile ":mongodb:3.0.3"
+    compile ":mongodb-create-drop:1.0.2"
+
+    //runtime ":database-migration:1.4.0"
     runtime ":jquery:1.11.1"
 
     compile ':asset-pipeline:2.1.5'
     compile ":less-asset-pipeline:2.0.8"
 
-
-    compile ":audit-logging:1.0.4"
+    //compile ":audit-logging:1.0.6-SNAPSHOT"
     compile ":spring-security-core:2.0-RC4" // Note: This version has issue GPSPRINGSECURITYCORE-309, due to GPSPRINGSECURITYCORE-318
 
   }

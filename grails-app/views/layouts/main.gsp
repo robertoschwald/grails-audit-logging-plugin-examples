@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="${assetPath(src:'main.css')}" type="text/css">
   <link rel="stylesheet" href="${assetPath(src:'mobile.css')}" type="text/css">
 
-  <asset:javascript src="application.js" />
-  <asset:stylesheet src="example.css" />
+  <asset:javascript src="application.js"/>
+  <asset:stylesheet src="example.css"/>
 
   <g:layoutHead/>
 </head>
@@ -26,7 +26,13 @@
 <div class="container-fluid container-content">
   <div id="grailsLogo" role="banner">
     <a href="http://grails.org"><img src="${resource(dir:'images', file:'grails_logo.png')}" alt="Grails"/></a>
+    <sec:ifLoggedIn>
+      <div id="logoutLink">
+        <g:link controller="logout"><g:message code="logout" default="logout"/></g:link>
+      </div>
+    </sec:ifLoggedIn>
   </div>
+
   <g:layoutBody/>
   <div class="footer" role="contentinfo"></div>
 

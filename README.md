@@ -16,9 +16,10 @@ For the MongoDB as single datasource example project, see branch [mongoDbOnlyDat
 
 ##Configuration##
  
- - MongoDB as the only DataSource
+ - H2 as the only DataSource
  - Hibernate dependencies
  - Spring-Security-Core to secure the pages and to get the actor in AuditLog
+ - database-migration to setup the schema
  
 ## Dependencies ##
 
@@ -29,7 +30,7 @@ For the MongoDB as single datasource example project, see branch [mongoDbOnlyDat
  * cache-ehcache:1.0.5
 
 ## Datasource ##
- This example uses a MongoDB Database.
+ This example uses a H2 Database.
  
  See grails-app/conf/DataSource.groovy for config details
 

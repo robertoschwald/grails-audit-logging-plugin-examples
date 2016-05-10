@@ -3,7 +3,7 @@
 This repository holds sample audit-logging applications in different branches to show the functionality of the Grails Audit-Logging plugin in action.
 They can be used by users to quickly verify functionality.
 
-The applications are secured by Spring Security (user: me, password: password)
+Most of the applications are secured by Spring Security (user: me, password: password)
 
 The Book domain class implements the audit logging event closures.
 
@@ -44,3 +44,12 @@ For the MongoDB as single datasource example project, see branch [mongoDbOnlyDat
  grails run-app
 ```
  * Access http://localhost:8080/audit-log-sample
+
+
+## grails_3.1.4 branch: single H2 datasource ##
+ * H2 db
+ * Simple usage example in Bootstrap.groovy
+
+```
+ grails run-app
+```

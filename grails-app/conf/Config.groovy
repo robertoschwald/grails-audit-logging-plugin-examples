@@ -174,7 +174,7 @@ grails {
           // http://stackoverflow.com/questions/18842863/recording-last-logged-in-in-grails-with-optimistic-locking-failure
           User user = User.lock(appCtx.springSecurityService.currentUser.id)
           user.lastLogin = new Date()
-          user.save(flush:true)
+          user.save()
         }
       }
     }

@@ -1,3 +1,5 @@
+import org.example.myproject.Catagorie
+import org.example.myproject.FiscalYear
 import org.example.myproject.MyAuditLogEvent
 import org.example.myproject.User
 
@@ -17,6 +19,14 @@ class BootStrap {
       MyAuditLogEvent.list().each {
         log.warn "AuditLog entry: $it"
       }
+
+      // Catagorie
+      def fiscalYear = new FiscalYear(name:"test").save(failOnError:true, flush:true)
+      def catagorie = new Catagorie(productCatagory:'testCatagorie')
+      fiscalYear.addToCatagories(catagorie)
+      catagorie.save(flush:true, failOnError:true)
+      fiscalYear.delete(flush:true, failOnError:true)
+      log.info "Application Bootstrap done."
     }
   }
   def destroy = {

@@ -10,7 +10,7 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 logger('grails.plugins.orm', TRACE)
-root(WARN, ['STDOUT'])
+root(INFO, ['STDOUT'])
 
 def targetDir = BuildSettings.TARGET_DIR
 if (Environment.isDevelopmentMode() && targetDir) {

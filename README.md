@@ -3,39 +3,41 @@
 This repository holds sample audit-logging applications in different branches to show the functionality of the Grails Audit-Logging plugin in action.
 They can be used by users to quickly verify functionality.
 
-The applications are secured by Spring Security (user: me, password: password)
+* The Domain actions are mostly performed in the Boostrap class. You can then use your browser to check the auditController list of events logged.
+* Most of the applications are secured by Spring Security (user: me, password: password)
+* Some Domain classes implement the audit event hooks as well.
 
-The Book domain class implements the audit logging event closures.
+## master branch: single datasource
+ * single H2 db DataSource
 
-## master branch: single datasource ##
+## grails_3.1.x branches
+ * single H2 db DataSource
+ * Auditing domains in Bootstrap.groovy
 
- * One common H2 Datasource for all domain classes 
+```
+ grails run-app
+```
 
-## mongoDbOnlyDatasource branch: MongoDB as only DataSource ##
+## mongoDbOnlyDatasource branch: MongoDB as only DataSource
 For the MongoDB as single datasource example project, see branch [mongoDbOnlyDatasource](https://github.com/robertoschwald/grails-audit-logging-plugin-examples/tree/mongoDbOnlyDatasource)
 
-##Configuration##
+### Configuration
  
  - H2 as the only DataSource
  - Hibernate dependencies
  - Spring-Security-Core to secure the pages and to get the actor in AuditLog
  - database-migration to setup the schema
  
-## Dependencies ##
+### Dependencies
+ * See the branches build.gradle / BuildConfig.groovy
 
- * Grails 2.4.4
- * audit-logging 1.1.0-SNAPSHOT
- * spring-security-core:2.0-RC4
- * hibernate4
- * cache-ehcache:1.0.5
-
-## Datasource ##
- This example uses a H2 Database.
+## Datasource
+ This examples use a H2 Database.
  
  See grails-app/conf/DataSource.groovy for config details
 
 
-## Starting the application ##
+## Starting the application
  * Checkout this source branch from GitHub
  * Change into the source-directory
  * Start the application: 

@@ -57,6 +57,7 @@ class MyAuditLogEvent implements Serializable {
         // for large column support (as in < 1.0.6 plugin versions), use
         // oldValue(nullable: true, maxSize: 65534)
         // newValue(nullable: true, maxSize: 65534)
+
     }
 
     static mapping = {
@@ -77,6 +78,10 @@ class MyAuditLogEvent implements Serializable {
         //autoImport false
 
         version false
+
+
+        datasource 'auditing'
+
     }
 
     /**

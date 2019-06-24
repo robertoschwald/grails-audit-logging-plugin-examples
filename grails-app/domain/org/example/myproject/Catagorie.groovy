@@ -1,9 +1,10 @@
 package org.example.myproject
 
+import grails.plugins.orm.auditable.Auditable
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Catagorie {
+class Catagorie implements Auditable {
     String productCatagory;
 
     Date dateCreated

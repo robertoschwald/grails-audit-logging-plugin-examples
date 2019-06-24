@@ -1,6 +1,8 @@
 package org.example.myproject
 
-class User {
+import grails.plugins.orm.auditable.Auditable
+
+class User implements Auditable {
 
     static auditable = true
     String username

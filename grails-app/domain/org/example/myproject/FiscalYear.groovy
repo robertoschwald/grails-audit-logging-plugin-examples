@@ -1,6 +1,8 @@
 package org.example.myproject
 
-class FiscalYear {
+import grails.plugins.orm.auditable.Auditable
+
+class FiscalYear implements Auditable {
     static auditable = true
 
     String name

@@ -14,9 +14,9 @@ They can be used by users to quickly verify functionality.
  * single H2 db DataSource
  * Auditing domains in Bootstrap.groovy
 
-```
- grails run-app
-```
+## grails_3.3.x_multiple branches
+ * multiple H2 db DataSources
+ * Auditing domains in Bootstrap.groovy
 
 ## mongoDbOnlyDatasource branch: MongoDB as only DataSource
 For the MongoDB as single datasource example project, see branch [mongoDbOnlyDatasource](https://github.com/robertoschwald/grails-audit-logging-plugin-examples/tree/mongoDbOnlyDatasource)
